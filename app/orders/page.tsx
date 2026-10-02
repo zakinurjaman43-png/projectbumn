@@ -1,0 +1,5 @@
+import Link from "next/link";
+import { requireMember } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+const rupiah=(n:number)=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n||0);
+export default async function Orders(){const profile=await requireMember();const supabase=await createClient();const {data:orders}=await supabase.from("orders").select("id,order_no,total_amount,status,created_at").eq("buyer_id",profile.id).order("created_at",{ascending:false});return <main><nav className="nav"><b>Order Saya</b><Link className="btn secondary" href="/products">Belanja Produk</Link></nav><section className="container"><div className="card"><table className="table"><thead><tr><th>Order</th><th>Total</th><th>Status</th><th>Tanggal</th></tr></thead><tbody>{(orders||[]).map(o=><tr key={o.id}><td>{o.order_no}</td><td>{rupiah(Number(o.total_amount))}</td><td><span className="pill">{o.status}</span></td><td>{new Date(o.created_at).toLocaleString("id-ID")}</td></tr>)}</tbody></table>{(orders||[]).length===0&&<p className="subtitle">Belum ada order.</p>}</div></section></main>;}
