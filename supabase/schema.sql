@@ -173,3 +173,5 @@ create policy "withdrawals own read" on public.withdrawals for select to authent
 grant execute on function public.request_withdrawal(numeric,text,text,text) to authenticated;
 revoke all on function public.approve_order(uuid) from public,anon,authenticated;
 revoke all on function public.process_withdrawal(uuid,text,text) from public,anon,authenticated;
+grant execute on function public.approve_order(uuid) to service_role;
+grant execute on function public.process_withdrawal(uuid,text,text) to service_role;
