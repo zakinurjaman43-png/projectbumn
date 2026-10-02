@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { requireAdmin } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+export default async function AdminMembers(){await requireAdmin();const db=createAdminClient();const {data:members}=await db.from("profiles").select("member_code,name,email,phone,role,status,sponsor_id,created_at").order("created_at",{ascending:false}).limit(1000);return <main><nav className="nav"><b>Admin • Member</b><Link className="btn secondary" href="/admin">Admin</Link></nav><section className="container"><div className="card"><table className="table"><thead><tr><th>ID</th><th>Nama</th><th>Email</th><th>Role</th><th>Status</th><th>Sponsor ID</th></tr></thead><tbody>{(members||[]).map(m=><tr key={m.member_code}><td>{m.member_code}</td><td>{m.name}</td><td>{m.email}</td><td>{m.role}</td><td>{m.status}</td><td>{m.sponsor_id||"-"}</td></tr>)}</tbody></table></div></section></main>;}
