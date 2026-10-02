@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server";
+import { requireAdminApi } from "@/lib/admin-api";
+export async function GET(){const {db,error}=await requireAdminApi();if(error)return NextResponse.json({error},{status:401});const {data,error:qe}=await db!.from("orders").select("id,order_no,total_amount,status,created_at,buyer_id,buyer:profiles!orders_buyer_id_fkey(member_code,name,email)").order("created_at",{ascending:false}).limit(500);return NextResponse.json({orders:data||[],error:qe?.message||null});}
+export async function POST(req:Request){const {db,error}=await requireAdminApi();if(error)return NextResponse.json({error},{status:401});const b=await req.json();if(b.action!=="complete")return NextResponse.json({error:"Aksi tidak valid"},{status:400});const {data,error:rpc}=await db!.rpc("approve_order",{p_order_id:b.order_id});if(rpc)return NextResponse.json({error:rpc.message},{status:400});return NextResponse.json(data||{success:true});}
