@@ -1,0 +1,3 @@
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+export async function requireAdminApi(){const supabase=await createClient();const {data}=await supabase.auth.getClaims();const userId=data?.claims?.sub;if(!userId)return {db:null,error:"Belum login"};const db=createAdminClient();const {data:profile}=await db.from("profiles").select("role,status").eq("id",userId).maybeSingle();if(profile?.role!=="admin"||profile.status!=="active")return {db:null,error:"Akses admin ditolak"};return {db,error:null};}
